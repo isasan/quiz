@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var partials = require('express-partials');
 var methodOverride = require('method-override'); 
 var session = require('express-session');
+var moment = require ('moment');
 
 var routes = require('./routes/index');
 
@@ -40,6 +41,17 @@ app.use(function(req, res, next) {
   // Hacer visible req.session en las vistas
   res.locals.session = req.session;
   next();
+});
+
+app.use(function(req, res, next) {
+    if(req.session.user) {
+        if((req.session.time + 120) < moment().unix()){
+            delete req.session.user;
+            res.render('sessions/new', {errors: [{"message": "La sesión ha caducado, haga login otra vez"}]});
+        }
+        req.session.time = moment().unix();
+    }
+    next();
 });
 
 app.use('/', routes);
@@ -77,5 +89,7 @@ app.use(function(err, req, res, next) {
         errors:[]
     });
 });
+
+
 
 module.exports = app;

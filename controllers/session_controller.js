@@ -1,3 +1,4 @@
+var moment = require ('moment');
 // MW de autorización de accesos HTTP restringidos
 exports.loginRequired = function(req, res, next){
    if (req.session.user) {
@@ -32,6 +33,7 @@ exports.create = function(req, res) {
         // Crear req.session.user y guardar campos   id  y  username
         // La sesión se define por la existencia de:    req.session.user
         req.session.user = {id:user.id, username:user.username};
+        req.session.time=moment().unix();
 
         res.redirect(req.session.redir.toString());// redirección a path anterior a login
     });
